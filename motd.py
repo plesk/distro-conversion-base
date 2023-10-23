@@ -28,7 +28,7 @@ def add_inprogress_ssh_login_message(message: str, motd_path: str = MOTD_PATH) -
 
 FINISH_INTRODUCE_MESSAGE = """
 ===============================================================================
-Message from the Plesk centos2alma tool:
+Message from the Plesk distupgrade tool:
 """
 
 FINISH_END_MESSAGE = """You can remove this message from the {} file.
