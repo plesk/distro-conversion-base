@@ -3,7 +3,7 @@ import os
 import unittest
 import zipfile
 
-from common import feedback
+import src.feedback as feedback
 
 
 class TestFeedback(unittest.TestCase):

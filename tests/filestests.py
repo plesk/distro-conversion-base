@@ -5,7 +5,7 @@ import json
 import tempfile
 import shutil
 
-from common import files
+import src.files as files
 
 
 class ReplaceFileStringTests(unittest.TestCase):

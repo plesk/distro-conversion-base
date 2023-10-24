@@ -3,7 +3,7 @@ import unittest
 import os
 import tempfile
 
-from common import motd
+import src.motd as motd
 
 
 class InprogressSshLoginMessageTests(unittest.TestCase):

@@ -3,7 +3,7 @@
 
 python_library(
     name = 'common.lib',
-    srcs = glob(['*.py']),
+    srcs = ['__init__.py', 'src'],
     visibility = ['PUBLIC'],
 )
 

@@ -1,7 +1,7 @@
 # Copyright 1999-2023. Plesk International GmbH. All rights reserved.
 import unittest
 
-from common import dist
+import src.dist as dist
 
 
 class TestDistro(unittest.TestCase):

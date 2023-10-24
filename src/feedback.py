@@ -5,7 +5,7 @@ import subprocess
 import typing
 import zipfile
 
-from common import dist
+from . import dist
 
 
 class Feedback():

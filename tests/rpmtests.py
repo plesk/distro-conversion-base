@@ -2,7 +2,7 @@
 import unittest
 import os
 
-from common import rpm
+import src.rpm as rpm
 
 
 class RemoveRepositoriesTests(unittest.TestCase):

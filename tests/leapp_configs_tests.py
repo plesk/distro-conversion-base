@@ -4,7 +4,7 @@ import os
 import json
 import typing
 
-from common import leapp_configs
+import src.leapp_configs as leapp_configs
 
 
 class AddMappingTests(unittest.TestCase):

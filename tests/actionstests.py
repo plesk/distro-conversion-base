@@ -1,9 +1,9 @@
 # Copyright 1999-2023. Plesk International GmbH. All rights reserved.
 import unittest
 from unittest import mock
-import os
 
-from common import action
+import os
+import src.action as action
 
 
 class SimpleAction(action.ActiveAction):
