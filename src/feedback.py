@@ -35,7 +35,11 @@ class Feedback():
                 versions.write("The {utility} utility version: {ver}\n".format(utility=self.util_name, ver=self.util_version))
                 versions.write("Distribution information: {}\n".format(" ".join(dist.get_distro_description(dist.get_distro()))))
 
-                kernel_info = subprocess.check_output(["/usr/bin/uname", "-a"], universal_newlines=True).splitlines()[0]
+                try:
+                    kernel_info = subprocess.check_output(["/usr/bin/uname", "-a"], universal_newlines=True).splitlines()[0]
+                except FileNotFoundError:
+                    kernel_info = "not available. likely we are in a container"
+
                 versions.write("Kernel information: {}\n".format(kernel_info))
             except subprocess.CalledProcessError:
                 versions.write("Plesk version is not available\n")
