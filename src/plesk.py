@@ -35,11 +35,11 @@ def get_plesk_full_version() -> typing.List[str]:
     return subprocess.check_output(["/usr/sbin/plesk", "version"], universal_newlines=True).splitlines()
 
 
-_CONVERSION_STATUS_FLAG_FILE = "/tmp/centos2alma-conversion.flag"
+_STATUS_FLAG_FILE_PATH = "/tmp/distupgrade-conversion.flag"
 
 
 def prepare_conversion_flag() -> None:
-    with open(_CONVERSION_STATUS_FLAG_FILE, "w"):
+    with open(_STATUS_FLAG_FILE_PATH, "w"):
         pass
 
 
@@ -56,7 +56,7 @@ def send_conversion_status(succeed: bool) -> str:
         log.warn("Unable to find report-update utility. Skip sending conversion status")
         return
 
-    if not os.path.exists(_CONVERSION_STATUS_FLAG_FILE):
+    if not os.path.exists(_STATUS_FLAG_FILE_PATH):
         log.warn("Conversion status flag file does not exist. Skip sending conversion status")
         return
 
@@ -65,7 +65,7 @@ def send_conversion_status(succeed: bool) -> str:
     try:
         log.debug("Trying to send status of conversion by report-update utility")
         subprocess.run(["/usr/bin/python3", results_sander_path, "--op", "dist-upgrade", "--rc", "0" if succeed else "1",
-                        "--start-flag", _CONVERSION_STATUS_FLAG_FILE, "--from", plesk_version, "--to", plesk_version],
+                        "--start-flag", _STATUS_FLAG_FILE_PATH, "--from", plesk_version, "--to", plesk_version],
                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except Exception as ex:
         log.warn("Unable to send conversion status: {}".format(ex))
@@ -76,5 +76,5 @@ def send_conversion_status(succeed: bool) -> str:
 
 
 def remove_conversion_flag() -> str:
-    if os.path.exists(_CONVERSION_STATUS_FLAG_FILE):
-        os.unlink(_CONVERSION_STATUS_FLAG_FILE)
+    if os.path.exists(_STATUS_FLAG_FILE_PATH):
+        os.unlink(_STATUS_FLAG_FILE_PATH)

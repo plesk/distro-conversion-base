@@ -4,14 +4,11 @@ import logging
 import typing
 
 
-DEFAULT_LOG_FILE = "/var/log/plesk/centos2alma.log"
-
-
 class logger():
-    files_logger = logging.getLogger("centos2alma_files")
+    files_logger = logging.getLogger("distupgrade_files")
 
     is_streams_enabled = False
-    streams_logger = logging.getLogger("centos2alma_streams")
+    streams_logger = logging.getLogger("distupgrade_streams")
 
     @staticmethod
     def init_logger(logfiles: typing.List[str], streams: typing.List[typing.Any],
