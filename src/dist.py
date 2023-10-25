@@ -58,16 +58,7 @@ def get_distro_description(distro: Distro) -> str:
         if value == distro:
             return key
 
-    if distro == Distro.centos7:
-        return "CentOS 7"
-    elif distro == Distro.almalinux8:
-        return "AlmaLinux 8"
-    elif distro == Distro.ubuntu18:
-        return "Ubuntu 18"
-    elif distro == Distro.ubuntu20:
-        return "Ubuntu 20"
-    else:
-        return "Unknown"
+    return "Unknown"
 
 
 def _is_deb_based(distro: Distro) -> bool:
