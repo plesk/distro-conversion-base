@@ -33,10 +33,14 @@ class Feedback():
         with open(self.VERSIONS_FILE_PATH, "w") as versions:
             try:
                 versions.write("The {utility} utility version: {ver}\n".format(utility=self.util_name, ver=self.util_version))
-                versions.write("Distribution information: {}\n".format(" ".join(dist.get_distro_description(dist.get_distro()))))
+                versions.write("Distribution information: {}\n".format(dist.get_distro_description(dist.get_distro())))
 
                 try:
-                    kernel_info = subprocess.check_output(["/usr/bin/uname", "-a"], universal_newlines=True).splitlines()[0]
+                    uname_path = "/usr/bin/uname"
+                    if not os.path.exists(uname_path):
+                        uname_path = "/bin/uname"
+
+                    kernel_info = subprocess.check_output([uname_path, "-a"], universal_newlines=True).splitlines()[0]
                 except FileNotFoundError:
                     kernel_info = "not available. likely we are in a container"
 
