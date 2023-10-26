@@ -173,3 +173,8 @@ class PHPVersionTests(unittest.TestCase):
         php1 = version.PHPVersion("PHP 5.2")
         php2 = version.PHPVersion("PHP 6.1")
         self.assertLess(php1, php2)
+
+    def test_compare_less_major_greater_minor_croocked(self):
+        php1 = version.PHPVersion("PHP 6.1")
+        php2 = version.PHPVersion("PHP 5.2")
+        self.assertGreater(php1, php2)

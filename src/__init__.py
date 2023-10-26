@@ -3,6 +3,7 @@ from .action import *
 from .dist import *
 from .dpkg import *
 from .log import *
+from .mariadb import *
 from .leapp_configs import *
 from .motd import *
 from .packages import *
