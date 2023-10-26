@@ -109,7 +109,7 @@ class PHPVersion():
         return f"PHP {self.major}.{self.minor}"
 
     def __lt__(self, other):
-        return self.major < other.major or self.minor < other.minor
+        return self.major < other.major or (self.major == other.major and self.minor < other.minor)
 
     def __eq__(self, other):
         return self.major == other.major and self.minor == other.minor
