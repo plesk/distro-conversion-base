@@ -238,6 +238,7 @@ def add_repositories_mapping(repofiles: typing.List[str], ignore: typing.List = 
 
 def set_package_repository(package: str, repository: str, leapp_pkgs_conf_path: str = LEAPP_PKGS_CONF_PATH) -> None:
     pkg_mapping = None
+    log.debug("Reconfigure mapping for package '{}' to repository '{}'".format(package, repository))
     with open(leapp_pkgs_conf_path, "r") as pkg_mapping_file:
         pkg_mapping = json.load(pkg_mapping_file)
         for info in pkg_mapping["packageinfo"]:
@@ -245,6 +246,7 @@ def set_package_repository(package: str, repository: str, leapp_pkgs_conf_path: 
                 if outpkg["name"] == package:
                     outpkg["repository"] = repository
 
+    log.debug("Write json into '{}'".format(leapp_pkgs_conf_path))
     files.rewrite_json_file(leapp_pkgs_conf_path, pkg_mapping)
 
 
