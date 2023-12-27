@@ -6,6 +6,8 @@ import typing
 
 from . import log
 
+CONVERTER_TEMP_DIRECTORY = "/usr/local/psa/var/centos2alma"
+
 
 def send_error_report(error_message: str) -> None:
     # Todo. For now we works only on RHEL-based distros, so the path
@@ -35,7 +37,7 @@ def get_plesk_full_version() -> typing.List[str]:
     return subprocess.check_output(["/usr/sbin/plesk", "version"], universal_newlines=True).splitlines()
 
 
-_STATUS_FLAG_FILE_PATH = "/tmp/distupgrade-conversion.flag"
+_STATUS_FLAG_FILE_PATH = CONVERTER_TEMP_DIRECTORY + "/distupgrade-conversion.flag"
 
 
 def prepare_conversion_flag() -> None:
