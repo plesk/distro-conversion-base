@@ -294,9 +294,10 @@ class CheckFlow(ActionsFlow):
 
 
 class FlowProgressbar():
-    def __init__(self, flow: ActionsFlow, writers: typing.List[writers.Writer] = None):
+    def __init__(self, flow: ActionsFlow, writers: typing.List[writers.Writer] = None, exceed_msg: str = None):
         self.flow = flow
         self.total_time = flow.get_total_time()
+        self.exceed_msg = exceed_msg
 
         if writers is None:
             writers = [writers.StdoutWriter]
@@ -351,5 +352,4 @@ class FlowProgressbar():
 
         if passed_time > self.total_time:
             self.write("\r\033[91m[" + "X" * 25 + self.get_action_description() + "X" * 25 + "] exceed\033[0m")
-            self.write(common.TIME_EXCEEDED_MESSAGE.format(common.DEFAULT_LOG_FILE))
-
+            self.write(self.exceed_msg)

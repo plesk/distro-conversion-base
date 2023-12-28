@@ -242,8 +242,12 @@ def set_package_repository(package: str, repository: str, leapp_pkgs_conf_path: 
     with open(leapp_pkgs_conf_path, "r") as pkg_mapping_file:
         pkg_mapping = json.load(pkg_mapping_file)
         for info in pkg_mapping["packageinfo"]:
+            if not info["out_packageset"] or not info["out_packageset"]["package"]:
+                continue
+
             for outpkg in info["out_packageset"]["package"]:
                 if outpkg["name"] == package:
+                    log.debug("Change '{}' package repository in info '{}' -> out packageset '{}'".format(package, info["id"], info["out_packageset"]["set_id"]))
                     outpkg["repository"] = repository
 
     log.debug("Write json into '{}'".format(leapp_pkgs_conf_path))
@@ -268,6 +272,9 @@ def set_package_action(package: str, type: LeappActionType, leapp_pkgs_conf_path
     with open(leapp_pkgs_conf_path, "r") as pkg_mapping_file:
         pkg_mapping = json.load(pkg_mapping_file)
         for info in pkg_mapping["packageinfo"]:
+            if not info["in_packageset"] or not info["in_packageset"]["package"]:
+                continue
+
             for inpackage in info["in_packageset"]["package"]:
                 if inpackage["name"] == package:
                     info["action"] = type
