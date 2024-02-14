@@ -31,12 +31,17 @@ class KernelVersion():
                 if suffix.startswith("vz"):
                     self.distro = suffix.split(".")[0]
                 else:
-                    self.distro, self.arch = suffix.split(".")
+                    self.distro, self.arch = suffix.rsplit(".", 1)
                 break
 
     def _extract_no_build(self, version: str):
         self.build = ""
         self.major, self.minor, self.patch, self.distro, self.arch = version.split(".")
+
+    def _remove_prefix(self, version: str):
+        while not version[0].isdigit():
+            version = version.split("-", 1)[-1]
+        return version
 
     def __init__(self, version: str):
         """Initialize a KernelVersion object."""
@@ -47,6 +52,7 @@ class KernelVersion():
         self.distro = ""
         self.arch = ""
 
+        version = self._remove_prefix(version)
         if "-" in version:
             self._extract_with_build(version)
         else:
