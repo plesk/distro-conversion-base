@@ -7,6 +7,7 @@ from .mariadb import *
 from .leapp_configs import *
 from .motd import *
 from .packages import *
+from .php import *
 from .plesk import *
 from .feedback import *
 from .files import *
