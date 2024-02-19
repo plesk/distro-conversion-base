@@ -89,7 +89,7 @@ def is_plesk_database_ready() -> bool:
 
 
 def get_from_plesk_database(query: str) -> typing.List[str]:
-    if is_plesk_database_ready():
+    if not is_plesk_database_ready():
         # This could be fine when we just restart the conversion/distupgrade tool
         # However, let's log this anyway, it might be a good point to reveal problems
         log.warn("Plesk database is not ready")
