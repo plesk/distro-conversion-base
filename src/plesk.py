@@ -4,7 +4,7 @@ import os
 import subprocess
 import typing
 
-from . import log
+from . import log, mariadb, systemd
 
 CONVERTER_TEMP_DIRECTORY = "/usr/local/psa/var/centos2alma"
 
@@ -80,3 +80,30 @@ def send_conversion_status(succeed: bool) -> str:
 def remove_conversion_flag() -> str:
     if os.path.exists(_STATUS_FLAG_FILE_PATH):
         os.unlink(_STATUS_FLAG_FILE_PATH)
+
+
+def is_plesk_database_ready() -> bool:
+    if mariadb.is_mariadb_installed():
+        return systemd.is_service_active("mariadb")
+    return systemd.is_service_active("mysql")
+
+
+def get_from_plesk_database(query: str) -> typing.List[str]:
+    if is_plesk_database_ready():
+        # This could be fine when we just restart the conversion/distupgrade tool
+        # However, let's log this anyway, it might be a good point to reveal problems
+        log.warn("Plesk database is not ready")
+        return []
+
+    cmd = ["/usr/sbin/plesk", "db", "-B", "-N", "-e", query]
+    log.debug(f"Executing query {cmd}")
+    proc = subprocess.run(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+        universal_newlines=True,
+    )
+    log.debug(f"Command {cmd} returned {proc.returncode}, stdout: '{proc.stdout}', stderr: '{proc.stderr}'")
+    return proc.stdout.splitlines()
+
