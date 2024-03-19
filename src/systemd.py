@@ -24,6 +24,29 @@ def is_service_active(service: str):
     return res.returncode == 0
 
 
+def get_required_services(service: str) -> typing.List[str]:
+    res = subprocess.run([SYSTEMCTL_BIN_PATH, 'cat', service], capture_output=True, text=True)
+    output = res.stdout.strip()
+
+    required_services = []
+    for line in output.split('\n'):
+        if line.startswith('Requires='):
+            required_services = line.split('s=')[1].split()
+            break
+    return required_services
+
+
+def is_service_can_be_started(service: str) -> bool:
+    if not is_service_exists(service):
+        return False
+
+    required_services = get_required_services(service)
+    for required_service in required_services:
+        if not is_service_exists(required_service):
+            return False
+    return True
+
+
 def reload_systemd_daemon():
     util.logged_check_call([SYSTEMCTL_BIN_PATH, "daemon-reload"])
 
