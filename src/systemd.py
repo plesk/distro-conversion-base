@@ -3,7 +3,7 @@ import os
 import typing
 import subprocess
 
-from . import dist, util
+from . import dist, log, util
 
 SYSTEMCTL_BIN_PATH = "/usr/bin/systemctl"
 if dist._is_deb_based(dist.get_distro()):
@@ -25,11 +25,16 @@ def is_service_active(service: str):
 
 
 def get_required_services(service: str) -> typing.List[str]:
-    res = subprocess.run([SYSTEMCTL_BIN_PATH, 'cat', service], capture_output=True, text=True)
-    output = res.stdout.strip()
+    res = subprocess.run(
+        [SYSTEMCTL_BIN_PATH, 'cat', service],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+        universal_newlines=True
+    )
 
     required_services = []
-    for line in output.split('\n'):
+    for line in res.stdout.splitlines():
         if line.startswith('Requires='):
             required_services = line.split('s=')[1].split()
             break
@@ -43,6 +48,7 @@ def is_service_can_be_started(service: str) -> bool:
     required_services = get_required_services(service)
     for required_service in required_services:
         if not is_service_exists(required_service):
+            log.debug("Service '{}' can't be started because required service '{}' doesn't exist".format(service, required_service))
             return False
     return True
 
