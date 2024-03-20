@@ -26,29 +26,53 @@ def is_service_active(service: str):
 
 def get_required_services(service: str) -> typing.List[str]:
     res = subprocess.run(
-        [SYSTEMCTL_BIN_PATH, 'cat', service],
+        [SYSTEMCTL_BIN_PATH, 'show', '--property', 'Requires', service],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         check=True,
         universal_newlines=True
     )
 
-    required_services = []
-    for line in res.stdout.splitlines():
-        if line.startswith('Requires='):
-            required_services = line.split('s=')[1].split()
-            break
+    required_services = [service for service in res.stdout.split('s=')[1].split() if '.service' in service]
     return required_services
 
 
-def is_service_can_be_started(service: str) -> bool:
+def is_service_masked(service: str) -> bool:
+    res = subprocess.run(
+        [SYSTEMCTL_BIN_PATH, 'is-enabled', service],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=True,
+        universal_newlines=True
+    )
+    if res.stdout == 'masked':
+        return True
+    return False
+
+
+def is_service_startable(
+        service: str,
+        already_checked: typing.Optional[typing.Set[str]] = None
+        ) -> bool:
     if not is_service_exists(service):
+        log.debug(f"Service '{service}' doesn't exist")
         return False
+    if is_service_masked(service):
+        log.debug(f"Service '{service}' can't be started because it is masked")
+        return False
+
+    if already_checked is not None and service in already_checked:
+        return True
+
+    if already_checked is None:
+        already_checked = {service}
+    else:
+        already_checked.add(service)
 
     required_services = get_required_services(service)
     for required_service in required_services:
-        if not is_service_exists(required_service):
-            log.debug("Service '{}' can't be started because required service '{}' doesn't exist".format(service, required_service))
+        if not is_service_startable(required_service, already_checked):
+            log.debug(f"Service '{service}' can't be started because required service '{required_service}' doesn't exist")
             return False
     return True
 
