@@ -26,6 +26,12 @@ name={name}
 metalink={url}
 """
 
+REPO_HEAD_WITH_MIRRORLIST = """
+[{id}]
+name={name}
+mirrorlist={url}
+"""
+
 
 def _do_replacement(to_change: str, replacement_list: typing.List[typing.Callable[[str], str]]) -> str:
     if to_change is None:
@@ -131,12 +137,12 @@ def _do_common_replacement(line: str) -> str:
     ])
 
 
-def is_repo_ok(id: str, name: str, url: str, metalink: str) -> bool:
+def is_repo_ok(id: str, name: str, url: str, metalink: str, mirrorlist: str) -> bool:
     if name is None:
         log.warn("Repository info for '[{id}]' has no a name".format(id=id))
         return False
 
-    if url is None and metalink is None:
+    if url is None and metalink is None and mirrorlist is None:
         log.warn("Repository info for '{id}' has no baseurl and metalink".format(id=id))
         return False
 
@@ -154,8 +160,8 @@ def adopt_repositories(repofile: str, ignore: typing.List = None) -> None:
         return
 
     with open(repofile + ".next", "a") as dst:
-        for id, name, url, metalink, additional_lines in rpm.extract_repodata(repofile):
-            if not is_repo_ok(id, name, url, metalink):
+        for id, name, url, metalink, mirrorlist, additional_lines in rpm.extract_repodata(repofile):
+            if not is_repo_ok(id, name, url, metalink, mirrorlist):
                 continue
 
             if id in ignore:
@@ -169,9 +175,12 @@ def adopt_repositories(repofile: str, ignore: typing.List = None) -> None:
             if url is not None:
                 url = _do_url_replacement(url)
                 repo_format = REPO_HEAD_WITH_URL
-            else:
+            elif metalink is not None:
                 url = _do_url_replacement(metalink)
                 repo_format = REPO_HEAD_WITH_METALINK
+            else:
+                url = _do_url_replacement(mirrorlist)
+                repo_format = REPO_HEAD_WITH_MIRRORLIST
 
             dst.write(repo_format.format(id=id, name=name, url=url))
 
@@ -195,8 +204,8 @@ def add_repositories_mapping(repofiles: typing.List[str], ignore: typing.List = 
                 log.warn("The repository mapper has tried to open an unexistent file: {filename}".format(filename=file))
                 continue
 
-            for id, name, url, metalink, additional_lines in rpm.extract_repodata(file):
-                if not is_repo_ok(id, name, url, metalink):
+            for id, name, url, metalink, mirrorlist, additional_lines in rpm.extract_repodata(file):
+                if not is_repo_ok(id, name, url, metalink, mirrorlist):
                     continue
 
                 if id in ignore:
@@ -210,9 +219,12 @@ def add_repositories_mapping(repofiles: typing.List[str], ignore: typing.List = 
                 if url is not None:
                     url = _do_url_replacement(url)
                     repo_format = REPO_HEAD_WITH_URL
-                else:
+                elif metalink is not None:
                     url = _do_url_replacement(metalink)
                     repo_format = REPO_HEAD_WITH_METALINK
+                else:
+                    url = _do_url_replacement(mirrorlist)
+                    repo_format = REPO_HEAD_WITH_MIRRORLIST
 
                 leapp_repos_file.write(repo_format.format(id=new_id, name=name, url=url))
 
