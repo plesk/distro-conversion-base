@@ -23,7 +23,18 @@ mirrorlist={url}
 """
 
 
-def extract_repodata(repofile: str) -> typing.Iterable[typing.Tuple[str, str, str, str, str, typing.List[str]]]:
+def extract_repodata(
+    repofile: str
+) -> typing.Iterable[
+    typing.Tuple[
+        typing.Optional[str],
+        typing.Optional[str],
+        typing.Optional[str],
+        typing.Optional[str],
+        typing.Optional[str],
+        typing.List[str]
+    ]
+]:
     id = None
     name = None
     url = None
@@ -70,7 +81,15 @@ def extract_repodata(repofile: str) -> typing.Iterable[typing.Tuple[str, str, st
     yield (id, name, url, metalink, mirrorlist, additional)
 
 
-def write_repodata(repofile: str, id: str, name: str, url: str, metalink: str, mirrorlist: str, additional: typing.List[str]) -> None:
+def write_repodata(
+    repofile: str,
+    id: typing.Optional[str],
+    name: typing.Optional[str],
+    url: typing.Optional[str],
+    metalink: typing.Optional[str],
+    mirrorlist: typing.Optional[str],
+    additional: typing.List[str]
+) -> None:
     repo_format = REPO_HEAD_WITH_URL
     if url is None and metalink is not None:
         url = metalink
@@ -85,7 +104,21 @@ def write_repodata(repofile: str, id: str, name: str, url: str, metalink: str, m
             dst.write(line)
 
 
-def remove_repositories(repofile: str, conditions: typing.Callable[[str, str, str, str, str], bool]) -> None:
+def remove_repositories(
+    repofile: str,
+    conditions: typing.Iterable[
+        typing.Callable[
+            [
+                typing.Optional[str],
+                typing.Optional[str],
+                typing.Optional[str],
+                typing.Optional[str],
+                typing.Optional[str]
+            ],
+            bool
+        ]
+    ]
+) -> None:
     for id, name, url, metalink, mirrorlist, additional_lines in extract_repodata(repofile):
         remove = False
         for condition in conditions:
